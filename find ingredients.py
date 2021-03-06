@@ -13,7 +13,7 @@ def recipesToCSV(recipes):
 def findRecipes(pantry):
     possible = []
     potential = searchRecipes(pantry)
-    for recipe in potential[:3]:
+    for recipe in potential:
         #create list of ingredients
         with urllib.request.urlopen(recipe) as url:
             text = str(url.read())
