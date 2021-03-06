@@ -9,7 +9,7 @@ def searchrecipes(pantry):
     recipes = []
 
     for food in pantry: #loop through foods
-        searcg = urlbase + food
+        search = urlbase + food
         with urllib.request.urlopen(search) as url: #split into sections that begin with a link
             text = str(url.read())
             text = text.split('<a class="card__titleLink manual-link-behavior"\\n                            href=')
