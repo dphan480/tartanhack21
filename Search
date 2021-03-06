@@ -1,0 +1,14 @@
+import RecipeList
+import GabeMain
+
+# Search through Recipe List CSV file
+
+def FindRecipes(Ingredients):
+    # Ingredients should be lowercase core words
+    # like "egg", "milk", "chicken", "flour"
+
+    for line in RecipeList
+    return
+
+
+
