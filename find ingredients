@@ -13,3 +13,19 @@ with urllib.request.urlopen("https://www.allrecipes.com/recipe/278339/amish-appl
 
 for index in range(0,len(relevant)):
     relevant[index] = relevant[index].strip()
+
+#find recipes from search
+food = "banana"
+base = "https://www.allrecipes.com/search/results/?search="
+link = base + food
+
+links = []
+
+with urllib.request.urlopen(link) as url:
+    text = str(url.read())
+    text = text.split('<a class="card__titleLink manual-link-behavior"\\n                            href=')
+    text = text[1:]
+    for item in text:
+        start = item.find('"')
+        end = item.find('"',start+1)
+        links += [item[start:end+1]]
