@@ -1,0 +1,15 @@
+import urllib
+import urllib.request
+from bs4 import BeautifulSoup
+
+with urllib.request.urlopen("https://www.allrecipes.com/recipe/278339/amish-apple-dumplings/") as url:
+    html = url.read()
+    text = str(html)
+    location = text.find("recipeIngredient")
+    start = text.find("[",location)
+    end = text.find("]",location)
+    relevant = text[start:end]
+    relevant = relevant.split("\\n")
+
+for index in range(0,len(relevant)):
+    relevant[index] = relevant[index].strip()
