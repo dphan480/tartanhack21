@@ -36,3 +36,5 @@ def findrecipes(pantry):
         if pantrymatch(pantry, ingredients):
             possible += [link] + relevant
     return possible
+    
+  #we don't have pantrymatch(pantry, ingredients)
