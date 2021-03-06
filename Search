@@ -1,3 +1,4 @@
+
 import RecipeList
 import GabeMain
 
@@ -17,6 +18,3 @@ def readFile(path):
 def writeFile(path, contents):
     with open(path, 'wt') as f:
         f.write(contents)
-
-
-
