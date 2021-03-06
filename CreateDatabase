@@ -6,6 +6,7 @@ def turnListsToCSV(Lists):
         addListToCSV(singleList)
     pass
 
+# Adds the list to CSV file
 def addListToCSV(recipe):
     content = ""
     for i in range(len(recipe)):
@@ -14,6 +15,7 @@ def addListToCSV(recipe):
             content += ","
     writeFile("RecipeList.csv",content+"\n")
 
+# appends content into a file at path. 
 def writeFile(path, contents):
-    with open(path, 'a') as f:
+    with open(path, 'a') as f: # "a" is for append "wt" is overwrite
         f.write(contents)
