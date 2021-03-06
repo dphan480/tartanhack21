@@ -2,7 +2,7 @@
 
 # Given a 2d list of lists, turns it into a csv file
 def turnListsToCSV(Lists):
-    for singeList in Lists:
+    for singleList in Lists:
         addListToCSV(singleList)
     pass
 
@@ -10,7 +10,7 @@ def turnListsToCSV(Lists):
 def addListToCSV(recipe):
     content = ""
     for i in range(len(recipe)):
-        content += recipe(i).replace(",","")
+        content += recipe[i].replace(",","")
         if i != (len(recipe) - 1):
             content += ","
     writeFile("RecipeList.csv",content+"\n")

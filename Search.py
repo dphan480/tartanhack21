@@ -1,6 +1,5 @@
 
 import RecipeList
-import GabeMain
 
 # Search through Recipe List CSV file
 
