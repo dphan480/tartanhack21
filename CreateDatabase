@@ -15,6 +15,11 @@ def addListToCSV(recipe):
             content += ","
     writeFile("RecipeList.csv",content+"\n")
 
+# Clears CSV File
+def clearCSVFile():
+    with open("RecipeList.csv","wt") as f:
+        f.write("")
+
 # appends content into a file at path. 
 def writeFile(path, contents):
     with open(path, 'a') as f: # "a" is for append "wt" is overwrite
