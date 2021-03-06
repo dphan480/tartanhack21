@@ -3,28 +3,15 @@ import urllib.request
 from bs4 import BeautifulSoup
 
 urlbase = "https://www.allrecipes.com/search/results/?search="
-pantry = ["apple","banana"]
+pantry = ["apple","apple"]
 
-def searchrecipes(pantry):
-    recipes = []
-
-    for food in pantry: #loop through foods
-        search = urlbase + food
-        with urllib.request.urlopen(search) as url: #split into sections that begin with a link
-            text = str(url.read())
-            text = text.split('<a class="card__titleLink manual-link-behavior"\\n                            href=')
-            text = text[1:] #irrelevant stuff before first link
-            for item in text: #find urls, add to list
-                start = item.find('"')
-                end = item.find('"',start+1)
-                recipes += [item[start+1:end]]
-    return recipes #list of first 20 recipes found for each food item
-
+#find possible recipes
 def findrecipes(pantry):
     possible = []
     potential = searchrecipes(pantry)
 
     for recipe in potential:
+        #create list of ingredients
         with urllib.request.urlopen(recipe) as url:
             text = str(url.read())
             location = text.find("recipeIngredient") #locate ingredients in html source
@@ -33,8 +20,40 @@ def findrecipes(pantry):
             ingredients = text[start:end] #isolate ingredients, split into list
             ingredients = relevant.split("\\n")
             ingredients = relevant[1:len(relevant)-1]
+            
         if pantrymatch(pantry, ingredients):
             possible += [link] + relevant
+
     return possible
-    
-  #we don't have pantrymatch(pantry, ingredients)
+
+#list of first 20 recipes found for each food item, gets rid of duplicates
+def searchrecipes(pantry):
+    recipes = []
+
+    #loop through pantry and find recipes
+    for food in pantry:
+        search = urlbase + food
+
+        #split into sections that begin with recipe url
+        with urllib.request.urlopen(search) as url: 
+            text = str(url.read())
+            text = text.split('<a class="card__titleLink manual-link-behavior"\\n                            href=')
+            text = text[1:] #irrelevant stuff before first link
+            
+            #find urls, add to list
+            for item in text: 
+                start = item.find('"')
+                end = item.find('"',start+1)
+                recipes += [item[start+1:end]]
+
+    #get rid of duplicates
+    uniquerecipes = []
+    for i in recipes: 
+        if i not in uniquerecipes: 
+            uniquerecipes.append(i) 
+
+    return uniquerecipes
+
+#compare ingredients to pantry
+def pantrymatch(pantry, ingredients):
+    <body>
