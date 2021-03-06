@@ -95,6 +95,16 @@ def cleanIngredients(ingredients):
     return ingredients
 
 def testFindRecipes():
-    pantry = ["banana"]
+    pantry = ["banana","apple",'walnut','butter','milk']
     recipes = findRecipes(pantry)
     recipesToCSV(recipes)
+
+def test():
+    contents = readFile("RecipeList.csv")
+    "www,a,bac\nhhh,sada"
+    line = "URL,ingredient,ingredient"
+    pass
+
+def readFile(path):
+    with open(path,'rt') as f:
+        return f.read()
