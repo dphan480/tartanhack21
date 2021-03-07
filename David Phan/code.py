@@ -16,7 +16,7 @@ def findRecipes(food): #searches website for possible recipes given an item
             end = text.find("]",location)
             ingredients = text[start:end] #isolate ingredients, split into list
             ingredients = ingredients.split("\\n")
-            ingredients = ingredients[1:len(ingredients)-1]
+            ingredients = ingredients[1:len(ingredients)-1] #get rid of extra stuff
             ingredients = cleanIngredients(ingredients)
             if pantryMatch(pantry,ingredients):
                 possible.append([recipe] + ingredients)
@@ -32,7 +32,7 @@ def searchRecipes(food): #list of first 20 unique recipes found for each food
         text = str(url.read())
         text = text.split('<a class="card__titleLink manual-link-behavior"\\n                            href=')
         text = text[1:] #irrelevant stuff before first link
-        for item in text: 
+        for item in text: #isolated url and add to list
             start = item.find('"')
             end = item.find('"',start+1)
             recipes += [item[start+1:end]]
@@ -42,35 +42,28 @@ def searchRecipes(food): #list of first 20 unique recipes found for each food
             uniquerecipes.append(i) 
     return uniquerecipes
 
-def cleanIngredients(ingredients): #clean up strings
-    chars = {
-    '\xc2\x82' : ',',        # High code comma
-    '\xc2\x84' : ',,',       # High code double comma
-    '\xc2\x85' : '...',      # Tripple dot
-    '\xc2\x88' : '^',        # High carat
-    '\xc2\x91' : '\x27',     # Forward single quote
-    '\xc2\x92' : '\x27',     # Reverse single quote
-    '\xc2\x93' : '\x22',     # Forward double quote
-    '\xc2\x94' : '\x22',     # Reverse double quote
-    '\xc2\x95' : ' ',
-    '\xc2\x96' : '-',        # High hyphen
-    '\xc2\x97' : '--',       # Double hyphen
-    '\xc2\x99' : ' ',
-    '\xc2\xa0' : ' ',
-    '\xc2\xa6' : '|',        # Split vertical bar
-    '\xc2\xab' : '<<',       # Double less than
-    '\xc2\xbb' : '>>',       # Double greater than
-    '\xc2\xbc' : '1/4',      # one quarter
-    '\xc2\xbd' : '1/2',      # one half
-    '\xc2\xbe' : '3/4',      # three quarters
-    '\xca\xbf' : '\x27',     # c-single quote
-    '\xcc\xa8' : '',         # modifier - under curve
-    '\xcc\xb1' : ''          # modifier - under line
-    }
+def removeKeywords(ingredients):
+    keywords = ["cups", "tablespoons", "tbsps", "tsps", "teaspoons", "packages", 
+                "package", "cup", "tablespoon", "tbsp", "tsp", 
+                "teaspoon", "containers", "container", "cans", "can",'pounds',
+                 'pound','pinch','pints','pint',"scoops", 
+                "scoop", "jars", "jar", "ounces",'ounce', "oz", 
+                "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+    for i in range(len(ingredients)):
+        for j in range(len(keywords)):
+            indexKeyword = ingredients[i].find(keywords[j])
+            if(indexKeyword != -1):    
+                indexKeyword = indexKeyword + len(keywords[j])
+                ingredients[i] = ingredients[i][indexKeyword+1:]
+                break
+    return ingredients
+
+def cleanIngredients(ingredients):
     for i in range(len(ingredients)):
         ingredients[i] = ingredients[i].replace(",","")
         ingredients[i] = ingredients[i].replace('"',"")
         ingredients[i] = ingredients[i].strip()
+    ingredients = removeKeywords(ingredients)
     return ingredients
 
 def pantryMatch(pantry, ingredients):
