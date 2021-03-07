@@ -4,9 +4,6 @@ from bs4 import BeautifulSoup
 from flask import Flask, redirect, request, url_for, render_template
 
 urlbase = "https://www.allrecipes.com/search/results/?search="
-pantry = ["apple","banana","flour","cooking spray","powder","salt",
-        "shortening","milk","brown sugar","cinnamon","water","butter","nutmeg",
-        "white sugar", "lemon juice", "blackberries", "pastry"]
 
 def findRecipes(food): #searches website for possible recipes given an item
     possible = []
