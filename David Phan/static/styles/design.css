@@ -11,9 +11,18 @@ input[type=text] {
 
 input[type=submit] {
     width:5%;
-    padding: 12px 20px;
 }
 
 body {
-    background-color:red;
+    background-color:darkgreen;
+    color: azure;
+}
+
+p {
+    color: azure;
+
+}
+
+form {
+    font-size:medium;
 }
