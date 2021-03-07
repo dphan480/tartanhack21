@@ -1,26 +1,24 @@
 import urllib
 import urllib.request
-from bs4 import BeautifulSoup
-from flask import Flask, redirect, request, url_for, render_template
+from flask import Flask, request, render_template
 
 urlbase = "https://www.allrecipes.com/search/results/?search="
 
 def searchRecipes(food): #list of first 20 unique recipes found for each food
     recipes = []
-    # for food in pantry:
-    food = food.replace(" ", "+")
+    food = food.replace(" ", "+") #adjust string for url
     food = food.replace(",", "%2C")
     search = urlbase + food
-    with urllib.request.urlopen(search) as url: #split into sections that begin with recipe url
+    with urllib.request.urlopen(search) as url: #split into sections that begin with a recipe url
         text = str(url.read())
         text = text.split('<a class="card__titleLink manual-link-behavior"\\n                            href=')
         text = text[1:] #irrelevant stuff before first link
-        for item in text: #isolated url and add to list
+        for item in text: #isolate url and add to list
             start = item.find('"')
             end = item.find('"',start+1)
             recipes += [item[start+1:end]]
     uniquerecipes = []
-    for i in recipes:
+    for i in recipes: #get rid of duplicates
         if i not in uniquerecipes:
             uniquerecipes.append(i)
     return uniquerecipes
@@ -49,7 +47,7 @@ def cleanIngredients(ingredients): #cleanup string
     ingredients = removeKeywords(ingredients)
     return ingredients
 
-def pantryMatch(pantry, ingredients): #checks to see if ingredients are in pantry
+def pantryMatch(pantry, ingredients): #checks to see if required ingredients are in pantry
     for ingredient in ingredients:
         if not ([food for food in pantry if food in ingredient]):
             return False
@@ -58,10 +56,10 @@ def pantryMatch(pantry, ingredients): #checks to see if ingredients are in pantr
 def findRecipes(food): #searches website for possible recipes given an item
     possible = []
     potential = searchRecipes(food)
-    for recipe in potential: #checks potential recipes to see which are possible
+    for recipe in potential: #for each recipe url locate ingredients in html source
         with urllib.request.urlopen(recipe) as url:
             text = str(url.read())
-            location = text.find("recipeIngredient") #locate ingredients in html source
+            location = text.find("recipeIngredient")
             start = text.find("[",location)
             end = text.find("]",location)
             ingredients = text[start:end] #isolate ingredients, split into list
@@ -94,7 +92,7 @@ def home():
                         pantry += items
     return render_template("homepage.html", pantry=pantry)
 
-@app.route('/search/', methods = ['POST', 'GET'])
+@app.route('/search/', methods = ['GET', 'POST'])
 def search():
     if request.method == 'GET':
         return "No"
@@ -107,9 +105,6 @@ def search():
             for item in items:
                 recipes += findRecipes(item)
         return render_template("search.html",recipes = recipes)
-
-def removeItem():
-    return item
 
 if __name__ == "__main__":
     app.run()
