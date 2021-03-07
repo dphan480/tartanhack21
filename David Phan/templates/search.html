@@ -1,10 +1,7 @@
 <center><img src='https://cdn.discordapp.com/attachments/817509433101123586/817990461423747093/Untitled_Artwork.png' alt='sloth' height = 300 width = 100%/></center>
-<body>
-<link rel="stylesheet" href="design.css">
-    {% for item in recipes %}
-        <font size="4"><a href={{item[0]}}>{{item[0]}}</a></font>
-        {% for ingredient in item[1: ] %}
-        <p><font size="-1">&emsp;&emsp;{{ingredient}}</font></p>
-        {% endfor %}
+{% for item in recipes %}
+    <font size="4"><a href={{item[0]}}>{{item[0]}}</a></font>
+    {% for ingredient in item[1: ] %}
+    <p><font size="-1">&emsp;&emsp;{{ingredient}}</font></p>
     {% endfor %}
-</body>
+{% endfor %}
