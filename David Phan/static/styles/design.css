@@ -3,13 +3,14 @@
 }
 
 input[type=text] {
-    width: 20%;
+    width: 30%;
     padding: 12px 20px;
     margin: 8px 0;
     box-sizing: border-box;
 }
 
 input[type=submit] {
+    width:5%;
     padding: 12px 20px;
 }
 
