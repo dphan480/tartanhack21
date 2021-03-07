@@ -22,10 +22,11 @@
         <font size="14">PANTRY:</font>
         {% for item in pantry %}
             <form action="/" method= "POST">
-                <p>{{item}}
+                <p>
+                    {{item}}
                     <input type = "submit" name = {{item}} value = "x" />
                 </p>
-            </form>                
+            </form>
         {% endfor %}
         </center>
     </body>
