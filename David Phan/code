@@ -29,6 +29,7 @@ def searchRecipes(food): #list of first 20 unique recipes found for each food
     recipes = []
     # for food in pantry:
     food = food.replace(" ", "+")
+    food = food.replace(",", "%2C")
     search = urlbase + food
     with urllib.request.urlopen(search) as url: #split into sections that begin with recipe url
         text = str(url.read())
@@ -83,20 +84,39 @@ def pantryMatch(pantry, ingredients):
 
 app = Flask(__name__)
 
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 def home():
+    global pantry
+    if request.method == 'GET':
+        pantry = []
+    if request.method == 'POST':
+        form_data = request.form.to_dict()
+        for key,value in form_data.items():
+            items = value.split(",")
+            items = [item.strip() for item in items]
+            if key == "Item":
+                for item in items:
+                    if item not in pantry:
+                        pantry += items
+            if key == "RemoveItem":
+                for item in items:
+                    if item in pantry:
+                        pantry.remove(item)
     return render_template("homepage.html",
                             pantry=pantry)
 
 @app.route('/search/', methods = ['POST', 'GET'])
-def data():
+def search():
     if request.method == 'GET':
         return f"The URL /data is accessed directly. Try going to '/form' to submit form"
     if request.method == 'POST':
         recipes = []
         form_data = request.form.to_dict()
         for key,value in form_data.items():
-            recipes += findRecipes(str(value))
+            items = value.split(",")
+            items = [item.strip() for item in items]
+            for item in items:
+                recipes += findRecipes(item)
         return render_template("search.html",recipes = recipes)
 
 if __name__ == "__main__":
