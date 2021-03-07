@@ -5,6 +5,56 @@ from flask import Flask, redirect, request, url_for, render_template
 
 urlbase = "https://www.allrecipes.com/search/results/?search="
 
+def searchRecipes(food): #list of first 20 unique recipes found for each food
+    recipes = []
+    # for food in pantry:
+    food = food.replace(" ", "+")
+    food = food.replace(",", "%2C")
+    search = urlbase + food
+    with urllib.request.urlopen(search) as url: #split into sections that begin with recipe url
+        text = str(url.read())
+        text = text.split('<a class="card__titleLink manual-link-behavior"\\n                            href=')
+        text = text[1:] #irrelevant stuff before first link
+        for item in text: #isolated url and add to list
+            start = item.find('"')
+            end = item.find('"',start+1)
+            recipes += [item[start+1:end]]
+    uniquerecipes = []
+    for i in recipes: 
+        if i not in uniquerecipes: 
+            uniquerecipes.append(i) 
+    return uniquerecipes
+
+def removeKeywords(ingredients): #isolate relevant ingredients
+    keywords = ["cups", "tablespoons", "tbsps", "tsps", "teaspoons", "packages", 
+                "package", "cup", "tablespoon", "tbsp", "tsp", 
+                "teaspoon", "containers", "container", "cans", "can",'pounds',
+                 'pound','pinch','pints','pint',"scoops", 
+                "scoop", "jars", "jar", "ounces",'ounce', "oz", 
+                "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+    for i in range(len(ingredients)):
+        for j in range(len(keywords)):
+            indexKeyword = ingredients[i].find(keywords[j])
+            if(indexKeyword != -1):    
+                indexKeyword = indexKeyword + len(keywords[j])
+                ingredients[i] = ingredients[i][indexKeyword+1:]
+                break
+    return ingredients
+
+def cleanIngredients(ingredients): #cleanup string
+    for i in range(len(ingredients)):
+        ingredients[i] = ingredients[i].replace(",","")
+        ingredients[i] = ingredients[i].replace('"',"")
+        ingredients[i] = ingredients[i].strip()
+    ingredients = removeKeywords(ingredients)
+    return ingredients
+
+def pantryMatch(pantry, ingredients): #checks to see if ingredients are in pantry
+    for ingredient in ingredients:
+        if not ([food for food in pantry if food in ingredient]):
+            return False
+    return True
+
 def findRecipes(food): #searches website for possible recipes given an item
     possible = []
     potential = searchRecipes(food)
@@ -16,68 +66,11 @@ def findRecipes(food): #searches website for possible recipes given an item
             end = text.find("]",location)
             ingredients = text[start:end] #isolate ingredients, split into list
             ingredients = ingredients.split("\\n")
-            ingredients = ingredients[1:len(ingredients)-1]
+            ingredients = ingredients[1:len(ingredients)-1] #get rid of extra stuff
             ingredients = cleanIngredients(ingredients)
             if pantryMatch(pantry,ingredients):
                 possible.append([recipe] + ingredients)
     return possible
-
-def searchRecipes(food): #list of first 20 unique recipes found for each food
-    recipes = []
-    # for food in pantry:
-    food = food.replace(" ", "+")
-    food = food.replace(",", "%2C")
-    search = urlbase + food
-    with urllib.request.urlopen(search) as url: #split into sections that begin with recipe url
-        text = str(url.read())
-        text = text.split('<a class="card__titleLink manual-link-behavior"\\n                            href=')
-        text = text[1:] #irrelevant stuff before first link
-        for item in text: 
-            start = item.find('"')
-            end = item.find('"',start+1)
-            recipes += [item[start+1:end]]
-    uniquerecipes = []
-    for i in recipes: 
-        if i not in uniquerecipes: 
-            uniquerecipes.append(i) 
-    return uniquerecipes
-
-def cleanIngredients(ingredients): #clean up strings
-    chars = {
-    '\xc2\x82' : ',',        # High code comma
-    '\xc2\x84' : ',,',       # High code double comma
-    '\xc2\x85' : '...',      # Tripple dot
-    '\xc2\x88' : '^',        # High carat
-    '\xc2\x91' : '\x27',     # Forward single quote
-    '\xc2\x92' : '\x27',     # Reverse single quote
-    '\xc2\x93' : '\x22',     # Forward double quote
-    '\xc2\x94' : '\x22',     # Reverse double quote
-    '\xc2\x95' : ' ',
-    '\xc2\x96' : '-',        # High hyphen
-    '\xc2\x97' : '--',       # Double hyphen
-    '\xc2\x99' : ' ',
-    '\xc2\xa0' : ' ',
-    '\xc2\xa6' : '|',        # Split vertical bar
-    '\xc2\xab' : '<<',       # Double less than
-    '\xc2\xbb' : '>>',       # Double greater than
-    '\xc2\xbc' : '1/4',      # one quarter
-    '\xc2\xbd' : '1/2',      # one half
-    '\xc2\xbe' : '3/4',      # three quarters
-    '\xca\xbf' : '\x27',     # c-single quote
-    '\xcc\xa8' : '',         # modifier - under curve
-    '\xcc\xb1' : ''          # modifier - under line
-    }
-    for i in range(len(ingredients)):
-        ingredients[i] = ingredients[i].replace(",","")
-        ingredients[i] = ingredients[i].replace('"',"")
-        ingredients[i] = ingredients[i].strip()
-    return ingredients
-
-def pantryMatch(pantry, ingredients):
-    for ingredient in ingredients:
-        if not ([food for food in pantry if food in ingredient]):
-            return False
-    return True
 
 app = Flask(__name__)
 
@@ -91,12 +84,11 @@ def home():
         for key,value in form_data.items():
             items = value.split(",")
             items = [item.strip() for item in items]
-            if key == "Item":
-                for item in items:
+            for item in items:
+                if key == "Item":
                     if item not in pantry:
                         pantry += items
-            if key == "RemoveItem":
-                for item in items:
+                if key == "RemoveItem":
                     if item in pantry:
                         pantry.remove(item)
     return render_template("homepage.html",
@@ -105,7 +97,7 @@ def home():
 @app.route('/search/', methods = ['POST', 'GET'])
 def search():
     if request.method == 'GET':
-        return f"The URL /data is accessed directly. Try going to '/form' to submit form"
+        return f"No"
     if request.method == 'POST':
         recipes = []
         form_data = request.form.to_dict()
