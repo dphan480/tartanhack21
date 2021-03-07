@@ -2,28 +2,24 @@
 <html>
     <head>
     <title>Home Page</title>
+    <link rel='stylesheet' type='text/css', href= "{{ url_for('static',filename='styles/design.css') }}">
     </head>
     <body>
-        <center><img src='https://cdn.discordapp.com/attachments/817509433101123586/818143081672343552/Untitled_Artwork.png'
-            alt='sloth'
-            height = 300
-            width = 100%/></center>
+        <center><img src='https://cdn.discordapp.com/attachments/817509433101123586/818143081672343552/Untitled_Artwork.png' alt='sloth' height = 30% width = 100%/></center>
     </body>
     <form action="/" method = "POST">
-        <p>
-            Add to pantry <input type = "text" name = "Item" />
-            <input type = "submit" value = "submit" />
-        </p>
+        <p>Add to pantry</p> 
+        <p><input type = "text" name = "Item" />
+            <input type = "submit" value = "submit" /></p>
     </form>
     <form action="/search/" method = "POST">
-        <p>
-            Find recipes that use: <input type = "text" name = "Recipes" />
-            <input type = "submit" value = "submit" />
-        </p>
+        <p>Find recipes with</p> 
+        <p><input type = "text" name = "Recipes" />
+        <input type = "submit" value = "submit" /></p>
     </form>
     <body>
         <center>
-        <font size="6">PANTRY:</font>
+        <font size="14">PANTRY:</font>
         {% for item in pantry %}
             <form action="/" method= "POST">
                 <p>

@@ -3,16 +3,17 @@
 }
 
 input[type=text] {
-    width: 100%;
+    width: 30%;
     padding: 12px 20px;
     margin: 8px 0;
     box-sizing: border-box;
 }
 
 input[type=submit] {
+    width:5%;
     padding: 12px 20px;
 }
 
 body {
-    background-color:dimgray;
+    background-color:red;
 }
