@@ -72,6 +72,7 @@ def findRecipes(food): #searches website for possible recipes given an item
                 possible.append([recipe] + ingredients)
     return possible
 
+
 app = Flask(__name__)
 
 @app.route("/", methods=['GET', 'POST'])
@@ -109,4 +110,5 @@ def search():
         return render_template("search.html",recipes = recipes)
 
 if __name__ == "__main__":
-    app.run(host = "0.0.0.0", debug = True)
+    app.run(host='localhost',debug=True)
+
