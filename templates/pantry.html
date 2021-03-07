@@ -1,0 +1,19 @@
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Welcome to The Pantry</title>
+    </head>
+    <body>
+        {% extends "template.html" %}
+        {% block content %}
+
+        <h1> Type what is in your pantry </h1>
+        <form action='' method="get">
+            <input type='text' name='food' />
+            <input type='submit' value='Submit' />
+        </form>
+        <p> something? </p>
+
+        {% endblock %}
+    </body>
+</html>
