@@ -5,23 +5,6 @@ from flask import Flask, redirect, request, url_for, render_template
 
 urlbase = "https://www.allrecipes.com/search/results/?search="
 
-def findRecipes(food): #searches website for possible recipes given an item
-    possible = []
-    potential = searchRecipes(food)
-    for recipe in potential: #checks potential recipes to see which are possible
-        with urllib.request.urlopen(recipe) as url:
-            text = str(url.read())
-            location = text.find("recipeIngredient") #locate ingredients in html source
-            start = text.find("[",location)
-            end = text.find("]",location)
-            ingredients = text[start:end] #isolate ingredients, split into list
-            ingredients = ingredients.split("\\n")
-            ingredients = ingredients[1:len(ingredients)-1] #get rid of extra stuff
-            ingredients = cleanIngredients(ingredients)
-            if pantryMatch(pantry,ingredients):
-                possible.append([recipe] + ingredients)
-    return possible
-
 def searchRecipes(food): #list of first 20 unique recipes found for each food
     recipes = []
     # for food in pantry:
@@ -42,7 +25,7 @@ def searchRecipes(food): #list of first 20 unique recipes found for each food
             uniquerecipes.append(i) 
     return uniquerecipes
 
-def removeKeywords(ingredients):
+def removeKeywords(ingredients): #isolate relevant ingredients
     keywords = ["cups", "tablespoons", "tbsps", "tsps", "teaspoons", "packages", 
                 "package", "cup", "tablespoon", "tbsp", "tsp", 
                 "teaspoon", "containers", "container", "cans", "can",'pounds',
@@ -58,7 +41,7 @@ def removeKeywords(ingredients):
                 break
     return ingredients
 
-def cleanIngredients(ingredients):
+def cleanIngredients(ingredients): #cleanup string
     for i in range(len(ingredients)):
         ingredients[i] = ingredients[i].replace(",","")
         ingredients[i] = ingredients[i].replace('"',"")
@@ -66,11 +49,28 @@ def cleanIngredients(ingredients):
     ingredients = removeKeywords(ingredients)
     return ingredients
 
-def pantryMatch(pantry, ingredients):
+def pantryMatch(pantry, ingredients): #checks to see if ingredients are in pantry
     for ingredient in ingredients:
         if not ([food for food in pantry if food in ingredient]):
             return False
     return True
+
+def findRecipes(food): #searches website for possible recipes given an item
+    possible = []
+    potential = searchRecipes(food)
+    for recipe in potential: #checks potential recipes to see which are possible
+        with urllib.request.urlopen(recipe) as url:
+            text = str(url.read())
+            location = text.find("recipeIngredient") #locate ingredients in html source
+            start = text.find("[",location)
+            end = text.find("]",location)
+            ingredients = text[start:end] #isolate ingredients, split into list
+            ingredients = ingredients.split("\\n")
+            ingredients = ingredients[1:len(ingredients)-1] #get rid of extra stuff
+            ingredients = cleanIngredients(ingredients)
+            if pantryMatch(pantry,ingredients):
+                possible.append([recipe] + ingredients)
+    return possible
 
 app = Flask(__name__)
 
@@ -84,12 +84,11 @@ def home():
         for key,value in form_data.items():
             items = value.split(",")
             items = [item.strip() for item in items]
-            if key == "Item":
-                for item in items:
+            for item in items:
+                if key == "Item":
                     if item not in pantry:
                         pantry += items
-            if key == "RemoveItem":
-                for item in items:
+                if key == "RemoveItem":
                     if item in pantry:
                         pantry.remove(item)
     return render_template("homepage.html",
@@ -98,7 +97,7 @@ def home():
 @app.route('/search/', methods = ['POST', 'GET'])
 def search():
     if request.method == 'GET':
-        return f"The URL /data is accessed directly. Try going to '/form' to submit form"
+        return f"No"
     if request.method == 'POST':
         recipes = []
         form_data = request.form.to_dict()
